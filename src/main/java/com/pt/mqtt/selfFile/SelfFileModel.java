@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +17,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SelfFileModel {
+
+public class SelfFileModel implements Serializable {
+    private static final long serialVersionUID = 1784217583289285562L;
     /** 版本*/
     private Integer version;
     /** 唯一队列key*/

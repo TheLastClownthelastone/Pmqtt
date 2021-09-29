@@ -43,37 +43,28 @@ public class SelfFileHandler {
      *
      * @param selfFileModel 文件写入操作进行上锁操作
      */
-    public void saveFile(SelfFileModel selfFileModel) {
-        AtomicBoolean atomicBoolean = _WRITE_LOCK.get(selfFileModel.getQueueKey());
+    public  void saveFile(SelfFileModel selfFileModel) {
         OutputStream out = null;
         ObjectOutputStream obs = null;
+        _LOCK.lock();
         try {
+            AtomicBoolean atomicBoolean = _WRITE_LOCK.get(selfFileModel.getQueueKey());
             // 第一次新增队列的时候
             if (atomicBoolean == null) {
-                log.info("【线程：{}】 创建自定义文件....",Thread.currentThread().getName());
-                // 防止多线程操作情况加上锁
-                _LOCK.lock();
-                AtomicBoolean aBoolean = _WRITE_LOCK.get(selfFileModel.getQueueKey());
-                try {
-                    log.info("多线程执并行中。。。，当前执行线程为：{}",Thread.currentThread().getName());
-                    if (aBoolean == null) {
-                        File file = new File(_ROOT_FILE_PATH + File.separator + selfFileModel.getQueueKey() + _FILE_PREFIX);
-                        AtomicBoolean aBoolean1 = new AtomicBoolean(false);
-                        out = new FileOutputStream(file);
-                        obs = new ObjectOutputStream(out);
-                        obs.writeObject(selfFileModel);
-                        _WRITE_LOCK.put(selfFileModel.getQueueKey(), aBoolean1);
-                    }
-                } finally {
-                    _LOCK.unlock();
-                }
+                log.info("创建文件。。。，当前执行线程为：{}",Thread.currentThread().getName());
+                File file = new File(_ROOT_FILE_PATH + File.separator + selfFileModel.getQueueKey() + _FILE_PREFIX);
+                AtomicBoolean aBoolean1 = new AtomicBoolean(false);
+                out = new FileOutputStream(file);
+                obs = new ObjectOutputStream(out);
+                obs.writeObject(selfFileModel);
+                _WRITE_LOCK.put(selfFileModel.getQueueKey(), aBoolean1);
             } else {
                 log.info("文件存在执行修改操作。。。");
                 broke:
                 {
                     // 第二次开始之后，防止并发操作
                     if (atomicBoolean.compareAndSet(false, true)) {
-                        log.info("当前执行文件修改的线程为：",Thread.currentThread().getName());
+                        log.info("当前执行文件修改的线程为：{}",Thread.currentThread().getName());
                         File file = new File(_ROOT_FILE_PATH + File.separator + selfFileModel.getQueueKey() + _FILE_PREFIX);
                         AtomicBoolean aBoolean1 = new AtomicBoolean(false);
                         out = new FileOutputStream(file);
@@ -90,6 +81,7 @@ public class SelfFileHandler {
             log.error("【{}】：数据录入失败。。，时间：{}", selfFileModel.getQueueKey() + _FILE_PREFIX, DateUtil.formatDate(new Date()));
             e.printStackTrace();
         } finally {
+            _LOCK.unlock();
             IOUtils.closeQuietly(obs);
             IOUtils.closeQuietly(out);
         }

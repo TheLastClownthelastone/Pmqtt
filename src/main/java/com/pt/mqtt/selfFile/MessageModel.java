@@ -15,7 +15,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageModel<T extends Serializable> {
+public class MessageModel<T extends Serializable> implements Serializable{
+    private static final long serialVersionUID = 3301072683411305787L;
     /** 消息唯一key*/
     private String messageKey;
     /** 消息内容*/
