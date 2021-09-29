@@ -1,6 +1,7 @@
 package com.pt.mqtt.selfFile;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.pt.mqtt.anno.Handler;
 import com.pt.mqtt.handler.AbstractHandler;
 import com.pt.mqtt.handler.PmqttHandler;
@@ -110,7 +111,7 @@ public class SelfFileHandler extends AbstractHandler {
             selfFileModelMap.put(queueKey,model);
             return model;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("【读取文件解析失败】：{}",e.getMessage());
         } finally {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(oin);
@@ -126,13 +127,15 @@ public class SelfFileHandler extends AbstractHandler {
         log.info("【自定义文件处理】：解析文件........");
         File[] files = new File(_ROOT_FILE_PATH).listFiles((file, dir) -> {
             log.info("【{}】", dir);
-            return file.getName().endsWith(".pt");
+            return dir.endsWith(".pt");
         });
         Arrays.stream(files).forEach(file -> {
-            String queueKey = file.getName().split(".")[0];
+            String queueKey = file.getName().split("\\.")[0];
             SelfFileModel parse = parse(queueKey);
             _WRITE_LOCK.put(queueKey,new AtomicBoolean(false));
-            selfFileModelMap.put(queueKey,parse);
+            if (ObjectUtil.isNotEmpty(parse)) {
+                selfFileModelMap.put(queueKey,parse);
+            }
         });
     }
 
