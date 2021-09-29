@@ -99,7 +99,7 @@ public class SelfFileHandler {
         try {
             File file = new File(fileName);
             in = new FileInputStream(file);
-            oin = new ObjectInputStream(oin);
+            oin = new ObjectInputStream(in);
             return (SelfFileModel) oin.readObject();
         } catch (Exception e) {
             e.printStackTrace();

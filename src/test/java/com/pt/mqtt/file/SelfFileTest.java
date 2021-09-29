@@ -76,6 +76,13 @@ public class SelfFileTest {
     }
 
 
+    @Test
+    public void exec4(){
+        SelfFileHandler selfFileHandler = new SelfFileHandler();
+        SelfFileModel testQueue = selfFileHandler.parse("testQueue");
+        System.out.println(testQueue);
+    }
+
     private SelfFileModel _build_model(String queueName){
         SelfFileModel model = new SelfFileModel();
         model.setQueueKey(queueName);

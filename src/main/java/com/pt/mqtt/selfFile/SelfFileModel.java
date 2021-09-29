@@ -3,6 +3,7 @@ package com.pt.mqtt.selfFile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@ToString
 public class SelfFileModel implements Serializable {
     private static final long serialVersionUID = 1784217583289285562L;
     /** 版本*/
