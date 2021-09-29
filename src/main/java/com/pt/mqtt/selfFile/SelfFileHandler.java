@@ -1,10 +1,14 @@
 package com.pt.mqtt.selfFile;
 
 import cn.hutool.core.date.DateUtil;
+import com.pt.mqtt.anno.Handler;
+import com.pt.mqtt.handler.AbstractHandler;
+import com.pt.mqtt.handler.PmqttHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +22,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Description 自定义文件处理器
  */
 @Slf4j
-public class SelfFileHandler {
+@Handler
+public class SelfFileHandler extends AbstractHandler {
     /**
      * 全局根目录地址
      */
@@ -100,7 +105,10 @@ public class SelfFileHandler {
             File file = new File(fileName);
             in = new FileInputStream(file);
             oin = new ObjectInputStream(in);
-            return (SelfFileModel) oin.readObject();
+            SelfFileModel model = (SelfFileModel) oin.readObject();
+            // 更新全局消息对象
+            selfFileModelMap.put(queueKey,model);
+            return model;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -110,5 +118,29 @@ public class SelfFileHandler {
         return null;
     }
 
+    /**
+     * 自定义文件处理handler 默认将项目中pt文件夹下面的所有.pt文件进行加载
+     */
+    @Override
+    public  void handler() {
+        log.info("【自定义文件处理】：解析文件........");
+        File[] files = new File(_ROOT_FILE_PATH).listFiles((file, dir) -> {
+            log.info("【{}】", dir);
+            return file.getName().endsWith(".pt");
+        });
+        Arrays.stream(files).forEach(file -> {
+            String queueKey = file.getName().split(".")[0];
+            SelfFileModel parse = parse(queueKey);
+            _WRITE_LOCK.put(queueKey,new AtomicBoolean(false));
+            selfFileModelMap.put(queueKey,parse);
+        });
+    }
 
+    /**
+     * 获取全局消息详情
+     * @return
+     */
+    public Map<String, SelfFileModel> getSelfModelMap(){
+        return selfFileModelMap;
+    }
 }

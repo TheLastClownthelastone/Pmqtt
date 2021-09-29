@@ -1,5 +1,6 @@
 package com.pt.mqtt.file;
 
+import cn.hutool.Hutool;
 import com.pt.mqtt.selfFile.MessageModel;
 import com.pt.mqtt.selfFile.SelfFileHandler;
 import com.pt.mqtt.selfFile.SelfFileModel;
@@ -81,6 +82,11 @@ public class SelfFileTest {
         SelfFileHandler selfFileHandler = new SelfFileHandler();
         SelfFileModel testQueue = selfFileHandler.parse("testQueue");
         System.out.println(testQueue);
+    }
+
+    @Test
+    public void exec5(){
+        Hutool.printAllUtils();
     }
 
     private SelfFileModel _build_model(String queueName){
