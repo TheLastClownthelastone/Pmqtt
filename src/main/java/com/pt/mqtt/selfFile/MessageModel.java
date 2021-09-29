@@ -1,5 +1,9 @@
 package com.pt.mqtt.selfFile;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +12,9 @@ import java.io.Serializable;
  * @Since 1.8
  * @Description 消息模型对象
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class MessageModel<T extends Serializable> {
     /** 消息唯一key*/
     private String messageKey;
@@ -15,28 +22,4 @@ public class MessageModel<T extends Serializable> {
     private T messageContent;
     /** 消费状态*/
     private String consumptionStatus;
-
-    public String getMessageKey() {
-        return messageKey;
-    }
-
-    public void setMessageKey(String messageKey) {
-        this.messageKey = messageKey;
-    }
-
-    public T getMessageContent() {
-        return messageContent;
-    }
-
-    public void setMessageContent(T messageContent) {
-        this.messageContent = messageContent;
-    }
-
-    public String getConsumptionStatus() {
-        return consumptionStatus;
-    }
-
-    public void setConsumptionStatus(String consumptionStatus) {
-        this.consumptionStatus = consumptionStatus;
-    }
 }

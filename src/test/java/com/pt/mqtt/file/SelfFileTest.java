@@ -1,8 +1,14 @@
 package com.pt.mqtt.file;
 
+import com.pt.mqtt.selfFile.MessageModel;
+import com.pt.mqtt.selfFile.SelfFileHandler;
+import com.pt.mqtt.selfFile.SelfFileModel;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author nate-pt
@@ -54,7 +60,32 @@ public class SelfFileTest {
     }
 
 
+    @Test
+    public void exec3() throws InterruptedException {
+        SelfFileHandler selfFileHandler = new SelfFileHandler();
+        CountDownLatch countDownLatch  = new CountDownLatch(15);
+        for (int i = 0; i < 15; i++) {
+            String s = String.valueOf(i);
+            new Thread(()->{
+                selfFileHandler.saveFile(_build_model("testQueue"));
+                countDownLatch.countDown();
+            },s).start();
+        }
+        countDownLatch.await();
+        System.out.println("所有线程任务执行完毕.................");
+    }
 
+
+    private SelfFileModel _build_model(String queueName){
+        SelfFileModel model = new SelfFileModel();
+        model.setQueueKey(queueName);
+        model.setVersion(1);
+        List<MessageModel> list = List.of(new MessageModel("1", "test", "1"),
+                new MessageModel("2", "test2", "1"),
+                new MessageModel("3", "test3", "3"));
+        model.setMessageKeys(list);
+        return model;
+    }
 
 
 
