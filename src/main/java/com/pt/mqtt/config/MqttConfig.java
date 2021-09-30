@@ -17,6 +17,7 @@ public class MqttConfig {
     private static final String _SYSTEM_CONFIG_FILE = "config/myself.conf";
     /** 全局配置文件*/
     private static  Config config = null;
+
     static {
         // 总配置
         var a = ConfigFactory.parseFile(new File(_SYSTEM_CONFIG_FILE));
